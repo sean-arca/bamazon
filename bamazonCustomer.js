@@ -1,4 +1,10 @@
+// Required npm packages
 var mysql = require("mysql");
+var inquirer = require("inquirer");
+
+// Global Variables
+var itemSelected;
+var quantity;
 
 // Connect to MySQL DB
 var connection = mysql.createConnection({
@@ -44,6 +50,8 @@ function showProducts () {
             // (var i = 0; i < results.length; i++)
             // console.log(`${results.item_id} - ${results.product_name}: $${results.price}`);
         });
+
+        console.log("Please type an item id to purchase.")
     });
 };
 
@@ -51,5 +59,27 @@ showProducts();
 
 
 // ask for id of which one to buy (inquirer)
+function buyItem() {
+    inquirer.prompt([
+        {
+            type:"input",
+            name:"itemSelected",
+            message:"Item ID entered:"
+        },
+        {
+            type:"input",
+            name:"quantity",
+            message:"How many would you like to purchase?"
+        }
+    ]).then(function (results) {
+        itemSelected = results.itemSelected;
+        quantity = Number(results.quantity);
+        
+        if (itemSelected > 10) {
+            console.log("Invalid item, please select a new item.")
+            buyItem();
+        }
+    });
+};
 
-    // ask for how many to buy
+buyItem();
