@@ -31,7 +31,6 @@ connection.connect(function(err) {
         console.log("\n===========================================");
         console.log("Welcome to Bamazon! Home of the best Warez!");
         console.log("===========================================");
-        console.log("\nID - Product Name: Price\n");
         showProducts();
     }
 });
@@ -42,7 +41,7 @@ function showProducts () {
         if (err) {
             throw err;
         };
-
+        console.log("\nID - Product Name: Price\n");
         results.forEach(element =>  {
             var item_id = element.item_id;
             var product_name = element.product_name;
