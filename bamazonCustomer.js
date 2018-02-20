@@ -32,6 +32,7 @@ connection.connect(function(err) {
         console.log("Welcome to Bamazon! Home of the best Warez!");
         console.log("===========================================");
         console.log("\nID - Product Name: Price\n");
+        showProducts();
     }
 });
 
@@ -56,9 +57,6 @@ function showProducts () {
         buyItem();
     });
 };
-
-showProducts();
-
 
 // Function to ask for ID of which item to buy (inquirer)
 function buyItem () {
