@@ -101,12 +101,12 @@ function checkItemStock () {
         if (quantity < stock_quantity) {
             newStockNum = stock_quantity - quantity;
             var totalPrice = price * quantity;
-            console.log(`\nYou're in luck! We have that item in stock. The total will be $${totalPrice} for ${quantity} units.\n`)
+            console.log(`\nYou're in luck! We have that item in stock. The total will be $${totalPrice} for ${quantity} units. Thank you and please come again!\n`)
             updateQuantity();
             connection.end();
             return;
         } else {
-            console.log(`\nSorry! We have none left in stock. Returning you to the product list.\n`);
+            console.log(`\nSorry! We only have ${stock_quantity} left in stock. Returning you to the product list.\n`);
             showProducts();
             return;
         }
@@ -115,5 +115,21 @@ function checkItemStock () {
 
 // Function to update the quantity in the MySQL db
 function updateQuantity () {
-
+    connection.query(`UPDATE products SET ? WHERE ?`,
+        [
+            {
+                stock_quantity: newStockNum
+            },
+            {
+                item_id: itemSelected
+            }
+        ],
+        function (err, results) {
+            if (err) {
+                throw err;
+            };
+            // Test
+            console.log(`Stock Quantity updated.`);
+        }
+    );
 };
