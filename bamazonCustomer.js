@@ -5,6 +5,7 @@ var inquirer = require("inquirer");
 // Global Variables
 var itemSelected;
 var quantity;
+var newStockNum;
 
 // Connect to MySQL DB
 var connection = mysql.createConnection({
@@ -52,7 +53,7 @@ function showProducts () {
             // console.log(`${results.item_id} - ${results.product_name}: $${results.price}`)};
         });
 
-        console.log("Please type an item id to purchase.")
+        buyItem();
     });
 };
 
@@ -65,7 +66,7 @@ function buyItem () {
         {
             type:"input",
             name:"itemSelected",
-            message:"Item ID entered:"
+            message:"Please type an item id to purchase."
         },
         {
             type:"input",
@@ -85,8 +86,6 @@ function buyItem () {
     });
 };
 
-buyItem();
-
 // Function to check database if item is in stock
 function checkItemStock () {
     connection.query(`SELECT stock_quantity, price FROM products WHERE item_id=${itemSelected}`, function(err, results) {
@@ -97,6 +96,24 @@ function checkItemStock () {
         var price = results[0].price;
 
         //Test
-        console.log(`${itemSelected} @ $${price} - ${stock_quantity} units in stock`);
+        // console.log(`${itemSelected} @ $${price} - ${stock_quantity} units in stock`);
+
+        if (quantity < stock_quantity) {
+            newStockNum = stock_quantity - quantity;
+            var totalPrice = price * quantity;
+            console.log(`\nYou're in luck! We have that item in stock. The total will be $${totalPrice} for ${quantity} units.\n`)
+            updateQuantity();
+            connection.end();
+            return;
+        } else {
+            console.log(`\nSorry! We have none left in stock. Returning you to the product list.\n`);
+            showProducts();
+            return;
+        }
     });
+};
+
+// Function to update the quantity in the MySQL db
+function updateQuantity () {
+
 };
