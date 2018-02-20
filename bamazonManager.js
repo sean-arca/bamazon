@@ -21,6 +21,7 @@ var connection = mysql.createConnection({
 
 // Queries
 var query = "SELECT * FROM products";
+var query2 = "SELECT * FROM products where stock_quantity < 5"
 
 // Connect & Welcome Message
 connection.connect(function(err) {
@@ -73,9 +74,31 @@ function showProducts () {
             var stock = element.stock_quantity;
             console.log(`${item_id} - ${product_name}: $${price} - ${stock} Left In Stock`)
         });
+        console.log("\nPlease re-run the node application to return to the main menu.");
     });
+    
     connection.end();
 };
+
 // View Low Inventory (list all items where quantity < 5)
+function showLowInventory () {
+    connection.query(query2, function(err, results) {
+        if (err) {
+            throw err;
+        };
+        console.log("ID - Product Name: Price - # Left In Stock\n");
+        results.forEach(element =>  {
+            var item_id = element.item_id;
+            var product_name = element.product_name;
+            var price = element.price;
+            var stock = element.stock_quantity;
+            console.log(`${item_id} - ${product_name}: $${price} - ${stock} Left In Stock`)
+        });
+        console.log("\nPlease re-run the node application to return to the main menu.");
+    });
+    connection.end();
+    
+};
+
 // Add to Inventory (display prompt(inquirer) to let manager "add more" of any item in store)
 // Add New Product (add brand new product to store)
