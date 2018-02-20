@@ -22,7 +22,7 @@ var connection = mysql.createConnection({
 // Queries
 var query = "SELECT * FROM products";
 
-// Connect & Query
+// Connect & Welcome Message
 connection.connect(function(err) {
     if (err) {
         throw err;
@@ -34,6 +34,7 @@ connection.connect(function(err) {
     }
 });
 
+// Function to Show Products 
 function showProducts () {
     connection.query(query, function(err, results) {
         if (err) {
@@ -47,8 +48,8 @@ function showProducts () {
             console.log(`${item_id} - ${product_name}: $${price}`)
 
             // Testing the old ways
-            // (var i = 0; i < results.length; i++)
-            // console.log(`${results.item_id} - ${results.product_name}: $${results.price}`);
+            // for (var i = 0; i < results.length; i++) {
+            // console.log(`${results.item_id} - ${results.product_name}: $${results.price}`)};
         });
 
         console.log("Please type an item id to purchase.")
@@ -58,8 +59,8 @@ function showProducts () {
 showProducts();
 
 
-// ask for id of which one to buy (inquirer)
-function buyItem() {
+// Function to ask for ID of which item to buy (inquirer)
+function buyItem () {
     inquirer.prompt([
         {
             type:"input",
@@ -79,7 +80,23 @@ function buyItem() {
             console.log("Invalid item, please select a new item.")
             buyItem();
         }
+        
+        checkItemStock();
     });
 };
 
 buyItem();
+
+// Function to check database if item is in stock
+function checkItemStock () {
+    connection.query(`SELECT stock_quantity, price FROM products WHERE item_id=${itemSelected}`, function(err, results) {
+        if (err) {
+            throw err
+        };
+        var stock_quantity = results[0].stock_quantity;
+        var price = results[0].price;
+
+        //Test
+        console.log(`${itemSelected} @ $${price} - ${stock_quantity} units in stock`);
+    });
+};
