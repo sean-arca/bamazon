@@ -39,7 +39,20 @@ function startManager() {
         message: "Hello Manager! - Choose from one of the following options",
         choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
     }).then(function (answer) {
-
+        var managerChoice = answer.managerChoice;
+        if (managerChoice === "View Products for Sale") {
+            console.log("\nViewing Products Currently for Sale...\n");
+            showProducts();
+        } else if (managerChoice === "View Low Inventory") {
+            console.log("\nViewing Products Low ( < 5 left ) in Inventory...\n");
+            showLowInventory();
+        } else if (managerChoice === "Add to Inventory") {
+            console.log("\nRunning Add to Inventory Function...\n");
+            addToInventory();
+        } else if (managerChoice === "Add New Product") {
+            console.log("\nRunning Add New Product Function...\n");
+            addNewProduct();
+        };
     });
 };
 
