@@ -5,6 +5,8 @@ var inquirer = require("inquirer");
 // Global variables
 var itemSelected;
 var newStockNum;
+var product_name;
+var addedStock;
 
 // Connect to MySQL DB
 var connection = mysql.createConnection({
@@ -21,7 +23,7 @@ var connection = mysql.createConnection({
 
 // Queries
 var query = "SELECT * FROM products";
-var query2 = "SELECT * FROM products where stock_quantity < 5"
+var query2 = "SELECT * FROM products where stock_quantity < 5";
 
 // Connect & Welcome Message
 connection.connect(function(err) {
@@ -45,16 +47,18 @@ function startManager() {
     }).then(function (answer) {
         var managerChoice = answer.managerChoice;
         if (managerChoice === "View Products for Sale") {
-            console.log("\nViewing Products Currently for Sale...\n");
+            console.log("\nViewing Products Currently for Sale...\nTo return to the main menu, please restart application.\n");
             showProducts();
+            connection.end();
         } else if (managerChoice === "View Low Inventory") {
-            console.log("\nViewing Products Low ( < 5 left ) in Inventory...\n");
+            console.log("\nViewing Products Low ( < 5 left ) in Inventory...\nTo return to the main menu, please restart application.\n");
             showLowInventory();
         } else if (managerChoice === "Add to Inventory") {
-            console.log("\nRunning Add to Inventory Function...\n");
+            console.log("\nRunning Add to Inventory Function...\nTo return to the main menu, please restart application.\n");
+            showProducts();
             addToInventory();
         } else if (managerChoice === "Add New Product") {
-            console.log("\nRunning Add New Product Function...\n");
+            console.log("\nRunning Add New Product Function...\nTo return to the main menu, please restart application.\n");
             addNewProduct();
         };
     });
@@ -66,7 +70,7 @@ function showProducts () {
         if (err) {
             throw err;
         };
-        console.log("ID - Product Name: Price - # Left In Stock\n");
+        console.log("\nID - Product Name: Price - # Left In Stock\n");
         results.forEach(element =>  {
             var item_id = element.item_id;
             var product_name = element.product_name;
@@ -74,19 +78,16 @@ function showProducts () {
             var stock = element.stock_quantity;
             console.log(`${item_id} - ${product_name}: $${price} - ${stock} Left In Stock`)
         });
-        console.log("\nPlease re-run the node application to return to the main menu.");
     });
-    
-    connection.end();
 };
 
-// View Low Inventory (list all items where quantity < 5)
+// Function to View Low Inventory (list all items where quantity < 5)
 function showLowInventory () {
     connection.query(query2, function(err, results) {
         if (err) {
             throw err;
         };
-        console.log("ID - Product Name: Price - # Left In Stock\n");
+        console.log("\nID - Product Name: Price - # Left In Stock\n");
         results.forEach(element =>  {
             var item_id = element.item_id;
             var product_name = element.product_name;
@@ -94,11 +95,59 @@ function showLowInventory () {
             var stock = element.stock_quantity;
             console.log(`${item_id} - ${product_name}: $${price} - ${stock} Left In Stock`)
         });
-        console.log("\nPlease re-run the node application to return to the main menu.");
     });
     connection.end();
     
 };
 
-// Add to Inventory (display prompt(inquirer) to let manager "add more" of any item in store)
+// Function to Add to Inventory (display prompt(inquirer) to let manager "add more" of any item in store)
+function addToInventory () {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "itemSelected",
+            message: "Please type the item id you'd like to add more inventory to."
+        },
+        {
+            type: "input",
+            name: "quantity",
+            message: "Please type the quantity of units you would like to add."
+        }
+    ]).then(function (answer) {
+        var itemSelected = Number(answer.itemSelected);
+        var addedStock = Number(answer.quantity);
+
+        connection.query(`SELECT * FROM products where item_id = ${itemSelected}`, function(err, results) {
+            if (err) {
+                throw err;
+            };
+            results.forEach(element =>  {
+                product_name = element.product_name;
+                newStockNum = element.stock_quantity + addedStock;
+            });
+            updateQuantity();
+        });
+    });
+};
+
+// Function to Update the MySQL db with the new quantity
+function updateQuantity () {
+    connection.query("UPDATE products SET ? WHERE ?",
+        [
+            {
+                stock_quantity: newStockNum
+            },
+            {
+                item_id: itemSelected
+            }
+        ], function (err, results) {
+            if (err) {
+                throw err;
+            };
+            console.log(`\n${product_name} received ${addedStock} units for a total of ${newStockNum}`);
+        }
+    );
+    connection.end();
+};
+
 // Add New Product (add brand new product to store)
