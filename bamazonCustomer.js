@@ -21,16 +21,34 @@ connection.connect(function(err) {
     if (err) {
         throw err;
     } else {
-        console.log("Welcome to Bamazon!");
-        
+        console.log("\n===========================================");
+        console.log("Welcome to Bamazon! Home of the best Warez!");
+        console.log("===========================================");
+        console.log("\nID - Product Name: Price\n");
     }
 });
 
-connection.query(query, function(err, results) {
-    for (var i = 0; i < results.length; i++) {
-      console.log(`${results[i].item_id} - ${results[i].product_name}: $${results[i].price}`);
-    }
-});
+function showProducts () {
+    connection.query(query, function(err, results) {
+        if (err) {
+            throw err;
+        };
+
+        results.forEach(element =>  {
+            var item_id = element.item_id;
+            var product_name = element.product_name;
+            var price = element.price;
+            console.log(`${item_id} - ${product_name}: $${price}`)
+
+            // Testing the old ways
+            // (var i = 0; i < results.length; i++)
+            // console.log(`${results.item_id} - ${results.product_name}: $${results.price}`);
+        });
+    });
+};
+
+showProducts();
+
 
 // ask for id of which one to buy (inquirer)
 
