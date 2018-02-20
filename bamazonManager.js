@@ -19,6 +19,9 @@ var connection = mysql.createConnection({
     database: "bamazon"
 });
 
+// Queries
+var query = "SELECT * FROM products";
+
 // Connect & Welcome Message
 connection.connect(function(err) {
     if (err) {
@@ -56,8 +59,23 @@ function startManager() {
     });
 };
 
-
-    // View Products for sale (itemid, name, prices, quantities)
-    // View Low Inventory (list all items where quantity < 5)
-    // Add to Inventory (display prompt(inquirer) to let manager "add more" of any item in store)
-    // Add New Product (add brand new product to store)
+// Function to View Products for sale (itemid, name, prices, quantities) 
+function showProducts () {
+    connection.query(query, function(err, results) {
+        if (err) {
+            throw err;
+        };
+        console.log("ID - Product Name: Price - # Left In Stock\n");
+        results.forEach(element =>  {
+            var item_id = element.item_id;
+            var product_name = element.product_name;
+            var price = element.price;
+            var stock = element.stock_quantity;
+            console.log(`${item_id} - ${product_name}: $${price} - ${stock} Left In Stock`)
+        });
+    });
+    connection.end();
+};
+// View Low Inventory (list all items where quantity < 5)
+// Add to Inventory (display prompt(inquirer) to let manager "add more" of any item in store)
+// Add New Product (add brand new product to store)
