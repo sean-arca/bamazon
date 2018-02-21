@@ -114,8 +114,8 @@ function addToInventory () {
             message: "Please type the quantity of units you would like to add."
         }
     ]).then(function (answer) {
-        var itemSelected = Number(answer.itemSelected);
-        var addedStock = Number(answer.quantity);
+        itemSelected = Number(answer.itemSelected);
+        addedStock = Number(answer.quantity);
 
         connection.query(`SELECT * FROM products where item_id = ${itemSelected}`, function(err, results) {
             if (err) {
@@ -150,4 +150,56 @@ function updateQuantity () {
     connection.end();
 };
 
-// Add New Product (add brand new product to store)
+// Constructor function to create new product
+function Product (name, price, department, stock) {
+    this.name = name,
+    this.price = price,
+    this.department = department,
+    this.stock = stock
+};
+
+// Function to Add New Product from constructor (to store / mysql db)
+function addNewProduct () {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "newName",
+            message: "What is the new product's name?"
+        },
+        {
+            type: "input",
+            name: "newPrice",
+            message: "What is the price of the new item?"
+        },
+        {
+            type: "input",
+            name: "newDepartment",
+            message: "What department does this new item belong to?"
+        },
+        {
+            type: "input",
+            name: "newStock",
+            message: "How many units do we currently have?"
+        }
+    ]).then(function (answer) {
+        var newProduct = new Product(answer.newName, Number(answer.newPrice), answer.newDepartment, Number(answer.newStock));
+        // Test
+        // console.log(newProduct);
+
+        connection.query("INSERT INTO products SET ?", 
+        {
+            product_name: newProduct.name,
+            department_name: newProduct.department,
+            price: newProduct.price,
+            stock_quantity: newProduct.stock
+        }, 
+            function (err, results) {
+                if (err) {
+                    throw err;
+                };
+                console.log(`Added ${newProduct.name} to the inventory.`);
+            }
+        );
+        connection.end();
+    });
+};
