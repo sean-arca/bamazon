@@ -5,7 +5,7 @@ This interactive shopping application is used to allow users to purchase items a
 
 ***
 
-#### Bamazon: Customer
+### Bamazon: Customer
 
 Using this application as a customer will allow the user to view the current items available for purchsae. Upon the process of purchasing, the user will be prompted to enter an item id and amount of the item they would like to purchase. The application will check if there is enough stock of the item and will let the user know if there is or isn't enough in stock. If there is, then the user will see the total amount of their purchase.
 
@@ -13,7 +13,7 @@ Using this application as a customer will allow the user to view the current ite
 
 ***
 
-#### Bamazon: Manager
+### Bamazon: Manager
 
 The Bamazon manager application will allow the manager to view and edit the inventory of the store. The manager will choose one of the following options:
 * View products for sale
